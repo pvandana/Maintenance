@@ -1,0 +1,68 @@
+Create table
+
+Template fields
+USE [CAW]
+GO
+
+/****** Object:  Table [dbo].[Template_Fields]    Script Date: 3/24/2017 9:23:27 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[Template_Fields](
+	[Field_Id] [int] IDENTITY(1,1) NOT NULL,
+	[Template_Id] [int] NOT NULL,
+	[Merge_Field_Id] [int] NOT NULL,
+	[Modified_Date] [date] NULL,
+	[Modified_By] [char](11) NULL,
+ CONSTRAINT [PK_Fields_Id] PRIMARY KEY CLUSTERED 
+(
+	[Field_Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+
+Merge Fields
+USE [CAW]
+GO
+
+/****** Object:  Table [dbo].[Merge_Fields]    Script Date: 3/24/2017 9:24:46 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[Merge_Fields](
+	[Merge_Field_Id] [int] IDENTITY(1,1) NOT NULL,
+	[Merge_Field_Name] [varchar](30) NULL,
+	[Prompt] [varchar](max) NULL,
+	[Field_Type] [varchar](10) NULL,
+ CONSTRAINT [PK_Merge_Fields] PRIMARY KEY CLUSTERED 
+(
+	[Merge_Field_Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+　
+　
+　
+　
