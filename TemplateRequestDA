@@ -1,1 +1,280 @@
+using System;
+using System.Configuration;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using Microsoft.Practices.EnterpriseLibrary.Data.Sql;
+using EPF.Utilities;
 
+//------------------------------------------------------------------------------
+//                                    TemplateRequestDA.cs
+//
+//      This class handles all requests for the Template Request DB Changes
+// 
+//------------------------------------------------------------------------------
+//                         
+//                                                                             
+//    Date     By                 Description                                
+//  --------  ---  -------------------------------------------------------------
+//  03-14-17  VP   Initial creation of program                               
+//  03-20-17  VP   Added a method for Template Subcategories "GetTemplateRequestCountsBySubcategory"
+//  03-21-17  VP   Added a method for Merge Fields "GetTemplateRequestCountsByMergeField"
+//------------------------------------------------------------------------------
+
+namespace EPF.DataAccess
+{
+    public class TemplateRequestDA
+    {
+        #region Member Variables
+
+        // Variables
+        private SqlDatabase _DB = null;
+
+        #endregion
+
+        #region Constructors
+
+		public TemplateRequestDA()
+        {
+            // Initialize Variables
+            ErrMsg = string.Empty;
+
+            try
+            {
+                // Create an instance of the SQL Database class
+                _DB = new SqlDatabase(ConfigurationManager.ConnectionStrings["CAW"].ToString());
+            }
+            catch (Exception err)
+            {
+                // Database Error
+                ErrMsg = string.Format("{0} - Connecting to Database Error - {1}",
+                                       GetType().FullName,
+                                       err.Message);
+
+                // Save the Error
+                CommonDA.SaveError(ErrMsg, err);
+            }
+        }
+
+        #endregion
+
+        #region Enums
+
+        #endregion
+
+　
+        #region Properties
+
+        public string ErrMsg { get; set; }
+
+        #endregion
+
+　
+        #region Methods
+
+        /// <summary>
+        /// Gets the number of Template Requests for a Category
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <returns>RowCount</returns>
+        internal int GetTemplateRequestCountsByCategory(int categoryId)
+        {
+            // Define Constants
+            const string sp = "dbo.Get_Template_Requests_Count_By_Categories";
+
+            int rowCount = 0;
+
+            // Set Stored Procedure
+            DbCommand dbCommand = _DB.GetStoredProcCommand(sp);
+
+            try
+            {
+                // Set Input Parameters
+                _DB.AddInParameter(dbCommand, "Category_Id", DbType.Int32, categoryId);
+
+                // Set Output Parameters
+                _DB.AddOutParameter(dbCommand, "Row_Count", DbType.Int32, 0);
+
+                _DB.ExecuteNonQuery(dbCommand);
+
+                rowCount = (int)_DB.GetParameterValue(dbCommand, "@Row_Count");
+            }
+            catch (InternalException err)
+            {
+                // Re-Throw the Internal Exception
+                throw;
+            }
+            catch (Exception err)
+            {
+                // Format the Parameters
+                string parms = CommonDA.FormatParmsSQL(dbCommand);
+
+                // Database Error
+                ErrMsg = string.Format("{0} - Get Template Request Count by Category Error - Parameters = {1} - {2}",
+                                       GetType().FullName,
+                                       parms,
+                                       err.Message);
+
+                // Save the Error
+                CommonDA.SaveError(ErrMsg, err);
+            }
+
+            return rowCount;
+        }
+
+　
+        /// <summary>
+        /// Gets the number of Template Requests for a Type
+        /// </summary>
+        /// <param name="typeId"></param>
+        /// <returns>RowCount</returns>
+        internal int GetTemplateRequestCountsByType(int typeId)
+        {
+            // Define Constants
+            const string sp = "dbo.Get_Template_Requests_Count_By_Type";
+
+            int rowCount = 0;
+
+            // Set Stored Procedure
+            DbCommand dbCommand = _DB.GetStoredProcCommand(sp);
+
+            try
+            {
+                // Set Input Parameters
+                _DB.AddInParameter(dbCommand, "Type_Id", DbType.Int32, typeId);
+
+                // Set Output Parameters
+                _DB.AddOutParameter(dbCommand, "Row_Count", DbType.Int32, 0);
+
+                _DB.ExecuteNonQuery(dbCommand);
+
+                rowCount = (int)_DB.GetParameterValue(dbCommand, "@Row_Count");
+            }
+            catch (InternalException err)
+            {
+                // Re-Throw the Internal Exception
+                throw;
+            }
+            catch (Exception err)
+            {
+                // Format the Parameters
+                string parms = CommonDA.FormatParmsSQL(dbCommand);
+
+                // Database Error
+                ErrMsg = string.Format("{0} - Get Template Request Count by Type Error - Parameters = {1} - {2}",
+                                       GetType().FullName,
+                                       parms,
+                                       err.Message);
+
+                // Save the Error
+                CommonDA.SaveError(ErrMsg, err);
+            }
+
+            return rowCount;
+        }
+
+　
+　
+        /// <summary>
+        /// Gets the number of Template Requests for a Subcategory
+        /// </summary>
+        /// <param name="subcategoryId"></param>
+        /// <returns>RowCount</returns>
+        internal int GetTemplateRequestCountsBySubcategory(int subcategoryId)
+        {
+            // Define Constants
+            const string sp = "dbo.Get_Template_Requests_Count_By_Subcategories";
+
+            int rowCount = 0;
+
+            // Set Stored Procedure
+            DbCommand dbCommand = _DB.GetStoredProcCommand(sp);
+
+            try
+            {
+                // Set Input Parameters
+                _DB.AddInParameter(dbCommand, "Subcategory_Id", DbType.Int32, subcategoryId);
+
+                // Set Output Parameters
+                _DB.AddOutParameter(dbCommand, "Row_Count", DbType.Int32, 0);
+
+                _DB.ExecuteNonQuery(dbCommand);
+
+                rowCount = (int)_DB.GetParameterValue(dbCommand, "@Row_Count");
+            }
+            catch (InternalException err)
+            {
+                // Re-Throw the Internal Exception
+                throw;
+            }
+            catch (Exception err)
+            {
+                // Format the Parameters
+                string parms = CommonDA.FormatParmsSQL(dbCommand);
+
+                // Database Error
+                ErrMsg = string.Format("{0} - Get Template Request Count by Subcategory Error - Parameters = {1} - {2}",
+                                       GetType().FullName,
+                                       parms,
+                                       err.Message);
+
+                // Save the Error
+                CommonDA.SaveError(ErrMsg, err);
+            }
+            return rowCount;
+        }
+
+　
+        /// <summary>
+        /// Gets the number of Template Requests for a Merge Field
+        /// </summary>
+        /// <param name="mergeFieldId"></param>
+        /// <returns>RowCount</returns>
+        internal int GetTemplateRequestCountsByMergeField(int mergeFieldId)
+        {
+            // Define Constants
+            const string sp = "dbo.Get_Template_Requests_Count_By_MergeFields";
+
+            int rowCount = 0;
+
+            // Set Stored Procedure
+            DbCommand dbCommand = _DB.GetStoredProcCommand(sp);
+
+            try
+            {
+                // Set Input Parameters
+                _DB.AddInParameter(dbCommand, "Merge_Field_Id", DbType.Int32, mergeFieldId);
+
+                // Set Output Parameters
+                _DB.AddOutParameter(dbCommand, "Row_Count", DbType.Int32, 0);
+
+                _DB.ExecuteNonQuery(dbCommand);
+
+                rowCount = (int)_DB.GetParameterValue(dbCommand, "@Row_Count");
+            }
+            catch (InternalException err)
+            {
+                // Re-Throw the Internal Exception
+                throw;
+            }
+            catch (Exception err)
+            {
+                // Format the Parameters
+                string parms = CommonDA.FormatParmsSQL(dbCommand);
+
+                // Database Error
+                ErrMsg = string.Format("{0} - Get Template Request Count by Merge Field Error - Parameters = {1} - {2}",
+                                       GetType().FullName,
+                                       parms,
+                                       err.Message);
+
+                // Save the Error
+                CommonDA.SaveError(ErrMsg, err);
+            }
+
+            return rowCount;
+        }
+
+        #endregion
+    }
+}
