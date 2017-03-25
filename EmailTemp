@@ -1,0 +1,429 @@
+ASPX
+
+<%@ Page Title="" 
+         Language="C#" 
+         MasterPageFile="~/MasterPages/SiteCAWNav.Master" 
+         AutoEventWireup="true" 
+         CodeBehind="EmailTemplates.aspx.cs" 
+         Inherits="EPF.Maintenance.EmailTemplates" %>
+
+<%@ Register Assembly="CKEditor.NET" Namespace="CKEditor.NET" TagPrefix="CKEditor" %>
+
+<asp:Content ID="Content1" 
+             ContentPlaceHolderID="HeadContent" 
+             runat="server">
+</asp:Content>
+
+<asp:Content ID="Content2" 
+             ContentPlaceHolderID="MainContent" 
+             runat="server">
+
+            <table cellpadding="1" 
+                   cellspacing="1" 
+                   width="99%" >
+
+                        <tr>
+                            <td>
+                                <h2>
+                                    <span> 
+                                        Maintenance - Email Templates
+                                    </span>
+                                </h2>
+                            </td>
+				        </tr>
+
+				        <tr>
+					        <td>
+						        <table cellspacing="4"
+                                       width="99%">
+                                    <tr>
+                                        <td align="right"
+                                            width="100px">
+                                             <asp:Label ID="lblEmailTemplate" 
+                                                        runat="server" 
+                                                        Text="Email Template: " 
+                                                        Font-Bold="True">
+                                             </asp:Label>
+                                        </td>
+                                        <td align="left">
+                                             <asp:DropDownList ID="ddlEmailTemplate" 
+                                                               runat="server" 
+                                                               DataSourceID="sdsEmailTemplates" 
+                                                               DataTextField="Name" 
+                                                               onselectedindexchanged="ddlEmailTemplate_SelectedIndexChanged"  
+                                                               AutoPostBack="True" 
+                                                               DataValueField="Email_Id" 
+                                                               AppendDataBoundItems="True">
+                                                 <asp:ListItem Value="--Select Email Template--"></asp:ListItem>
+                                             </asp:DropDownList>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">
+                                             <asp:Label ID="lblEmailSubject" 
+                                                        runat="server" 
+                                                        Text="Email Subject: " 
+                                                        Font-Bold="True">
+                                             </asp:Label>
+                                        </td>
+                                        <td align="left">
+                                             <asp:TextBox ID="txtEmailSubject"
+                                                          runat="server"
+                                                          Width="600px" 
+                                                          ClientIDMode="Static">
+                                             </asp:TextBox>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <asp:RequiredFieldValidator ID="rfvEmailSubject" 
+                                                                        runat="server" 
+                                                                        ControlToValidate="txtEmailSubject" 
+                                                                        Display="Dynamic" 
+                                                                        ErrorMessage="Email Subject"
+                                                                        ForeColor="Red" 
+                                                                        SetFocusOnError="True"
+                                                                        Text="*" />
+                                            <asp:SqlDataSource ID="sdsEmailTemplates" 
+                                                               runat="server" 
+                                                               ConnectionString="<%$ ConnectionStrings:CAW %>" 
+                                                               SelectCommand="Get_Emails" 
+                                                               SelectCommandType="StoredProcedure" 
+                                                               UpdateCommand="Update_Emails" 
+                                                               UpdateCommandType="StoredProcedure">
+                                                <UpdateParameters>
+                                                    <asp:Parameter Name="ID" Type="Int32" />
+                                                    <asp:Parameter Name="Subject" Type="String" />
+                                                    <asp:Parameter Name="Message" Type="String" />
+                                                    <asp:SessionParameter Name="Updated_By" Type="String" SessionField="EmplId" />
+                                                </UpdateParameters>
+                                            </asp:SqlDataSource>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <asp:Panel ID="pnlBoxes" runat="server">
+                                <table width="75%" >
+                                    
+                                        <tr>
+                                            <td>
+                                                 <asp:Label ID="lblMessage" 
+                                                            runat="server" 
+                                                            Text="Message:" 
+                                                            Font-Bold="True">
+                                                 </asp:Label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <CKEditor:CKEditorControl ID="ckeEmailMessage" 
+                                                                          runat="server"  
+                                                                          Toolbar="Custom" 
+                                                                          Skin="moonocolor">
+                                                </CKEditor:CKEditorControl>
+                                            </td>
+                                        </tr>
+                                        
+                                    <tr>
+                                        <td>        
+                                            <br />
+                                            <asp:Button ID="btnSave" 
+                                                        runat="server" 
+                                                        Text="Save" 
+                                                        ToolTip="Save your email template" 
+                                                        CssClass="buttonBlue" 
+                                                        onclick="btnSave_Click" /> 
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <asp:Button ID="btnCancel" 
+                                                        runat="server" 
+                                                        Text="Cancel" 
+                                                        ToolTip="Cancel/Reset your email template" 
+                                                        CssClass="buttonBlue" 
+                                                        OnClientClick="return confirm('Are you sure you want to Cancel/Reset your email template?');" 
+                                                        onclick="btnCancel_Click" 
+                                                        CausesValidation="False" />
+                                        </td>
+                                    </tr>
+						        </table>
+                                </asp:Panel>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <%--     Validation Summary - Displays a MessageBox     --%>
+                    <asp:ValidationSummary ID="ValidationSummary1" 
+                                            runat="server" 
+                                            ShowMessageBox="True" 
+                                            ShowSummary="False" 
+                                            HeaderText="Please enter the following information:" />
+
+</asp:Content>
+
+
+
+CS
+
+using System;
+using System.Data;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using EPF.Utilities;
+using EPF.DataAccess;
+using EPF.BusinessObjects;
+
+namespace EPF.Maintenance
+{
+    public partial class EmailTemplates : System.Web.UI.Page
+    {
+        #region Member Variables
+
+        // Module Level Variables
+        HRSCLogsDA _HRSCLogsDA = null;
+
+        #endregion
+
+        /// <summary>
+        /// Page Load
+        /// </summary>
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            // Initialise the Logging Class
+            _HRSCLogsDA = new HRSCLogsDA();
+
+            // Check if 1st time
+            if (!IsPostBack)
+            { 
+                // Hide the boxes until an Email Template is selected
+                HideFields();
+
+                //  Log the Action
+                string logMsg = string.Format("Maintenance - Email Templates Screen Accessed by - EmplId: {0}",
+                                              Session["EmplId"].ToString());
+                _HRSCLogsDA.Insert(logMsg);
+
+            }
+        }
+
+        
+        /// <summary>
+        /// Cancel any Email Template changes, and reload with original values.
+        /// </summary>
+        protected void btnCancel_Click(object sender, EventArgs e)
+        {
+            //**NOTE**
+            //There is a OnClientClick() in the ASPX to ask "Are you sure?"
+
+            try
+            {
+                int saveSubject = Convert.ToInt32(ddlEmailTemplate.SelectedValue);
+                int saveIndex = ddlEmailTemplate.SelectedIndex;
+
+                //Reset buttons to show dropdown list and hide the editable text box for Email Subject
+                ddlEmailTemplate.Visible = true;
+                rfvEmailSubject.Enabled = false;
+
+                //Manully reload DDL
+                ddlEmailTemplate.Items.Clear();
+                ddlEmailTemplate.Items.Add("--Select Email Subject--");
+                ddlEmailTemplate.DataBind();
+
+                //Was the original number in the list?
+                if (ddlEmailTemplate.Items.Count > saveIndex)
+                {
+                    LoadEmail(saveSubject);
+                    ddlEmailTemplate.Items.FindByValue(saveSubject.ToString()).Selected = true;
+                }
+                else
+                {
+                    // Hide panel and buttons
+                    pnlBoxes.Visible = false;
+                }
+            }
+            catch (InternalException err)
+            {
+                // Display a messagebox
+                AlertMessage.Show(err.UserFriendlyMsg, this.Page);
+            }
+            catch (Exception err)
+            { 
+                // Database Error
+                string errMsg = string.Format("{0} - Email Templates Screen Cancel button error - {1}",
+                                              GetType().FullName,
+                                              err.Message);
+                // Log the Error
+                AppLogWrapper.LogError(errMsg);
+
+                // Display a User Friendly Error Message
+                errMsg = "There was a problem on the Email Templates screen with the Cancel button click. If the problem persists, please contact Technical Support.";
+ 
+                // Display a MessageBox
+                AlertMessage.Show(errMsg, this.Page);
+            }
+        }
+
+        /// <summary>
+        /// Save the Email Template to the DB
+        /// </summary>
+        protected void btnSave_Click(object sender, EventArgs e)
+        {
+            //**NOTE**
+            //There is a OnClientClick() in the ASPX to ask "Are you sure?"
+
+            try
+            {
+                // Save information from screen
+                EmailsBO emailBO = new EmailsBO();
+
+                emailBO.Id = Convert.ToInt32(ddlEmailTemplate.SelectedValue);
+                emailBO.Subject = txtEmailSubject.Text.Trim();
+                emailBO.Message = ckeEmailMessage.Text.Trim();
+                emailBO.Updated_By = Session["EmplId"].ToString();
+
+                // Update record into Emails table in the DB
+                EmailsDA emailsDA = new EmailsDA();
+                emailsDA.UpdateEmail(emailBO);
+
+                // Display a User Friendly Message
+                string dbMsg = "Email Template was updated in the Database";
+
+                // Display a MessageBox
+                AlertMessage.Show(dbMsg, this.Page);
+
+                // Log the record insert
+                string logMsg = string.Format("Email Templates Maintenance updated by: {0}, Template Id: {1}",
+                                              Session["EmplId"].ToString(),
+                                              ddlEmailTemplate.SelectedItem);
+                _HRSCLogsDA.Insert(logMsg);
+            }
+            catch (InternalException err)
+            {
+                // Display a MessageBox
+                AlertMessage.Show(err.UserFriendlyMsg, this.Page);
+            }
+            catch (Exception err)
+            { 
+                // Database Error
+                string errMsg = string.Format("{0} - Emails Screen Save Button Error - {1}",
+                                              GetType().FullName,
+                                              err.Message);
+                // Log the Error
+                AppLogWrapper.LogError(errMsg);
+
+                // Display a User Friendly Error Message
+                errMsg = "There was a problem on the Emails Screen with the Save button click. If the problem persists, Please contact Technical Support.";
+
+                // Display a Messagebox
+                AlertMessage.Show(errMsg, this.Page);
+            }
+        }
+
+　
+        /// <summary>
+        /// Fires when the Email Subject dropdownlist changes values
+        /// </summary>
+        protected void ddlEmailTemplate_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (ddlEmailTemplate.Text == "--Select Email Template--")
+                {
+                    // Hide textfields and panel
+                    HideFields();
+                }
+                else
+                {
+                    // Display textfields and panel
+                    ShowFields();
+
+                    // Whatever # is selected from the dropdown, fill in the 3 boxes and radio buttons from the DB.
+                    LoadEmail(Convert.ToInt32(ddlEmailTemplate.SelectedValue));
+                }
+            }
+            catch (InternalException err)
+            {
+                // Display a MessageBox
+                AlertMessage.Show(err.UserFriendlyMsg, this.Page);
+            }
+            catch (Exception err)
+            { 
+                // Database error
+                string errMsg = string.Format("{0} - Drop Down List Email Subject SelectIndexChanged Error - {1}",
+                                              GetType().FullName,
+                                              err.Message);
+                // Log the Error
+                AppLogWrapper.LogError(errMsg);
+
+                // Display a User Friendly Error Message
+                errMsg = "There was a problem with the EmailTemplates screen.  If the problem persists, please contact Technical Support.";
+
+                // Display a Messagebox
+                AlertMessage.Show(errMsg, this.Page);
+            }
+        }
+
+　
+        /// <summary>
+        /// Loads the Email Template from the DB
+        /// </summary>
+        /// <param name="id"></param>
+        protected void LoadEmail(int id)
+        {
+            EmailsBO emailBO = new EmailsBO();
+
+            try
+            {
+                EmailsDA emailsDA = new EmailsDA();
+                emailBO = emailsDA.GetEmail(id);
+                ckeEmailMessage.Text = emailBO.Message.ToString();
+                txtEmailSubject.Text = emailBO.Subject.ToString();
+            }
+            catch (InternalException err)
+            {
+                // Display a Messagebox
+                AlertMessage.Show(err.UserFriendlyMsg, this.Page);
+            }
+            catch (Exception err)
+            { 
+                // Database Error
+                string errMsg = string.Format("{0} - Email Templates Screen, Error getting email from DB - {1}",
+                                              GetType().FullName,
+                                              err.Message);
+                // Log the Error
+                AppLogWrapper.LogError(errMsg);
+
+                // Display a User Friendly Error Message
+                errMsg = "There was a problem on the Email Templates Screen while retrieving the information from the database. If the problem persists, please contact Technical Support.";
+
+                // Display a Messagebox
+                AlertMessage.Show(errMsg, this.Page);
+            }
+        }
+
+        /// <summary>
+        /// Method declaration to hide the textfields and panel
+        /// </summary>
+        private void HideFields()
+        {
+            lblEmailSubject.Visible = false;
+            txtEmailSubject.Visible = false;
+            rfvEmailSubject.Enabled = false;
+            pnlBoxes.Visible = false;
+        }
+
+        /// <summary>
+        /// Method declaration to display the textfields and panel
+        /// </summary>
+        private void ShowFields()
+        {
+            lblEmailSubject.Visible = true;
+            txtEmailSubject.Visible = true;
+            rfvEmailSubject.Enabled = true;
+            pnlBoxes.Visible = true;
+        }
+        
+    }
+}
