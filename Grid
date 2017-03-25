@@ -1,0 +1,78 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI.WebControls;
+
+//------------------------------------------------------------------------------
+//                                    GridFormatting.cs
+//
+//      This class handles the formatting of the grids
+// 
+//------------------------------------------------------------------------------
+// 
+//                          Modification Control Log                           
+//                                                                             
+//    Date     By                 Description                                
+//  --------  ---  -------------------------------------------------------------
+//  04-15-12  TJM  Initial creation of program
+// 
+//------------------------------------------------------------------------------
+
+namespace EPF.Utilities
+{
+    public class GridFormatting
+    {
+        #region Member Variables
+
+        #endregion
+
+　
+        #region Constructors
+
+        #endregion
+
+　
+        #region Enums
+
+        #endregion
+
+　
+        #region Properties
+
+        public string ErrMsg { get; set; }
+
+        #endregion
+
+　
+        #region Methods
+
+        /// <summary>
+        /// Change the Background Color of the row during Hoover
+        /// </summary>
+        /// <param name="e"></param>
+        public static void GridViewStyle(GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                // Change the Background Color of the row during Hoover
+                e.Row.Attributes["onmouseover"] = "origColor=style.backgroundColor;style.cursor='hand';style.backgroundColor=rollColor;";
+                e.Row.Attributes["onmouseout"] = "style.textDecoration='none';style.backgroundColor=origColor;";
+            }
+        }
+
+　
+        /// <summary>
+        /// Change the Background Color of the row cell during Hoover
+        /// </summary>
+        /// <param name="e"></param>
+        public static void GridViewCellStyle(TableCell t)
+        {
+            // Change the Background Color of the row cell during Hoover
+            t.Attributes["onmouseover"] = "origColor=style.backgroundColor;style.cursor='hand';style.backgroundColor=rollColor;";
+            t.Attributes["onmouseout"] = "style.textDecoration='none';style.backgroundColor=origColor;";
+        }
+
+        #endregion
+    }
+}
