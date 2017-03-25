@@ -1,0 +1,111 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Web.UI;
+
+//------------------------------------------------------------------------------
+//                                    AlertMessage.cs
+//
+//      This class class displays the Alert Message using JQuery
+// 
+//------------------------------------------------------------------------------
+// 
+//                          Modification Control Log                           
+//                                                                             
+//    Date     By                 Description                                
+//  --------  ---  -------------------------------------------------------------
+//  08-13-13  TJM  Initial creation of program                               
+// 
+//------------------------------------------------------------------------------
+
+namespace EPF.Utilities
+{
+    /// <summary>
+    /// Wraps the ability to post an Alert message from code-behind to the Web page.  
+    /// Ensures that the appropriate ScriptManager is called and that the code is
+    ///  wrapped in a jQuery document ready method.
+    /// 
+    /// Note: This will not work unless jQuery is referenced within
+    ///       web page.
+    /// </summary>
+    public sealed class AlertMessage
+    {
+        #region Member Variables
+
+        #endregion
+
+　
+        #region Constructors
+
+        static AlertMessage()
+        {
+
+        }
+
+        #endregion
+
+　
+        #region Enums
+
+        #endregion
+
+　
+        #region Properties
+
+        #endregion
+
+　
+        #region Methods
+
+        public static void Show(string alertMessage, Page pageCaller)
+        {
+            runjQueryCode("alert('" + alertMessage + "');", pageCaller);
+        }
+
+　
+        public static void ShowAndClose(string alertMessage, Page pageCaller)
+        {
+            runjQueryCode("alert('" + alertMessage + "'); CloseAndRefresh();", pageCaller);
+        }
+
+　
+        /// <summary>
+        /// Determines if the ScriptManager or ClientScript Manager needs to be called...
+        /// </summary>
+        /// <param name="scriptCode"></param>
+        /// <param name="pageCaller"></param>
+        private static void runjQueryCode(string scriptCode, Page pageCaller)
+        {
+            ScriptManager requestSM = ScriptManager.GetCurrent(pageCaller);
+
+            if (requestSM != null 
+                && requestSM.IsInAsyncPostBack)
+            {
+                ScriptManager.RegisterClientScriptBlock(pageCaller, typeof(Page), "SCPAlertScript", buildEmbeddedScript(scriptCode), true);
+            }
+            else
+            {
+                ClientScriptManager scriptManager = pageCaller.ClientScript;
+
+                if (! scriptManager.IsClientScriptBlockRegistered("SCPAlertScript"))
+                {
+                    pageCaller.ClientScript.RegisterClientScriptBlock(typeof(Page), "SCPAlertScript", buildEmbeddedScript(scriptCode), true);
+                }
+            }
+        }
+
+        private static string buildEmbeddedScript(string scriptCode)
+        {
+            StringBuilder embeddedScript = new StringBuilder();
+            embeddedScript.AppendLine("$(document).ready(function() {");
+            embeddedScript.AppendLine(scriptCode);
+            embeddedScript.AppendLine(" });");
+
+            return embeddedScript.ToString();
+        }
+
+        #endregion
+    }
+}
