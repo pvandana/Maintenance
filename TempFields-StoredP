@@ -1,0 +1,151 @@
+ALTER PROCEDURE [dbo].[Delete_Merge_Fields] 
+	-- Add the parameters for the stored procedure here
+	@Merge_Field_Id Int = Null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+-- Delete the Merge Field name by Merge Field ID
+   DELETE 
+		FROM [dbo].[Merge_Fields]
+		WHERE Merge_Field_Id = @Merge_Field_Id
+END
+
+ALTER PROCEDURE [dbo].[Get_FieldType_MergeFields] 
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Retrieves all the Field types in the dropdown for the Maintenance screen - Template Fields  
+	Select distinct Field_Type
+	  From dbo.Merge_Fields Order By Field_Type
+
+END
+
+
+USE [CAW]
+GO
+/****** Object:  StoredProcedure [dbo].[Get_Merge_Fields]    Script Date: 3/24/2017 9:28:41 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Vandana Ponnada
+-- Create date: 3/21/17
+-- Description:	Get all the values for Merge Fields
+-- =============================================
+ALTER PROCEDURE [dbo].[Get_Merge_Fields] 
+	-- Add the parameters for the stored procedure here
+	@New_Record Varchar(5) = Null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Retrieves the Merge Field Names 
+	If @New_Record = 'True'
+	  Begin
+		-- Include a Blank New Record
+		Select Merge_Field_Id, Merge_Field_Name, Prompt, Field_Type
+		  From dbo.Merge_Fields				 
+		  Union
+		  Select 0, Null, Null, 'CHECKBOX'
+		  Order By Merge_Field_Name
+		End
+	Else
+		Begin
+		  --Only actual requests
+		  --Retrieves all the Merge Field Names and places "Add a new Merge Field" at the bottom
+		  Select Merge_Field_Id, Merge_Field_Name, Prompt, Field_Type
+		    From dbo.Merge_Fields
+		  Order By 
+			Case When Merge_Field_Name = 'Add a new Merge Field' 
+				  Then 'ZZZZZ'
+				 Else
+				  Merge_Field_Name 
+			 End	
+		END
+END
+
+
+USE [CAW]
+GO
+/****** Object:  StoredProcedure [dbo].[Get_Template_Requests_Count_By_MergeFields]    Script Date: 3/24/2017 9:29:18 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Vandana Ponnada
+-- Create date: 3/21/17
+-- Description:	Get Maintenance screen Template request Count by Merge Field ID
+-- =============================================
+ALTER PROCEDURE [dbo].[Get_Template_Requests_Count_By_MergeFields]
+	-- Add the parameters for the stored procedure here
+	@Merge_Field_Id int = Null,
+	@Row_Count int Output
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Determine the number of requests that use this Merge Field Id
+	Select @Row_Count = Count(*) 
+	  From Template_Fields
+	 Where Merge_Field_Id = @Merge_Field_Id
+END
+
+
+
+USE [CAW]
+GO
+/****** Object:  StoredProcedure [dbo].[Insert_Update_Merge_Fields]    Script Date: 3/24/2017 9:30:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Vandana Ponnada
+-- Create date: 3/21/17
+-- Description:	Inserts/ Updates records in the Merge Fields 
+-- =============================================
+ALTER PROCEDURE [dbo].[Insert_Update_Merge_Fields] 
+	-- Add the parameters for the stored procedure here
+	   @Merge_Field_Id Int = Null,
+	   @Merge_Field_Name varchar(30) = Null,
+	   @Prompt varchar(max) = Null,
+       @Field_Type VARCHAR(10) = Null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- Inserts a new row in the Merge Fields by Merge Field ID if record not present 
+	IF NOT EXISTS 
+		(
+		  SELECT Merge_Field_Id  
+		   FROM dbo.Merge_Fields 
+		   WHERE Merge_Field_Id = @Merge_Field_Id
+		)
+		 INSERT 
+		   INTO dbo.Merge_Fields(Merge_Field_Name, Prompt, Field_Type)
+		   VALUES (@Merge_Field_Name, @Prompt, @Field_Type)
+	
+	ELSE
+
+    -- Updates a row in the Merge Fields by Merge Field ID if record already present 
+	UPDATE dbo.Merge_Fields
+		SET Merge_Field_Name = @Merge_Field_Name,
+			Prompt = @Prompt,
+			Field_Type = @Field_Type
+		WHERE
+			Merge_Field_Id = @Merge_Field_Id
+END
