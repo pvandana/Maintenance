@@ -1,0 +1,78 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+//------------------------------------------------------------------------------
+//                                    InternalException.cs
+//
+//      This class is used for throwing an Internal Exception after the initial
+//      exception is handled.
+// 
+//------------------------------------------------------------------------------
+// 
+//                          Modification Control Log                           
+//                                                                             
+//    Date     By                 Description                                
+//  --------  ---  -------------------------------------------------------------
+//  07-31-12  JV   Initial creation of program                               
+// 
+//------------------------------------------------------------------------------
+
+namespace EPF.Utilities
+{
+    public sealed class InternalException : ApplicationException
+    {
+        #region Member Variables
+
+        #endregion
+
+　
+        #region Constructors
+
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        private InternalException()
+        {
+            ErrMsg = string.Empty;
+            UserFriendlyMsg = string.Empty;
+            Exc = null;
+        }
+
+　
+        /// <summary>
+        /// Constructor with Parameters
+        /// </summary>
+        /// <param name="errMsg">Error Message</param>
+        /// <param name="userFriendlyMsg">User Friendly Message</param>
+        /// <param name="exc">Exception</param>
+        public InternalException(string errMsg, string userFriendlyMsg, Exception exc)
+        {
+            ErrMsg = errMsg;
+            UserFriendlyMsg = userFriendlyMsg;
+            Exc = exc;
+        }
+
+        #endregion
+
+　
+        #region Enums
+
+        #endregion
+
+　
+        #region Properties
+
+        public string ErrMsg { get; set; }
+        public string UserFriendlyMsg { get; set; }
+        public Exception Exc { get; set; }
+
+        #endregion
+
+　
+        #region Methods
+
+        #endregion
+    }
+}
