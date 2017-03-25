@@ -28,3 +28,45 @@ GO
 
 SET ANSI_PADDING OFF
 GO
+
+
+
+Templates Table
+
+USE [CAW]
+GO
+
+/****** Object:  Table [dbo].[Templates]    Script Date: 3/24/2017 9:25:38 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[Templates](
+	[Template_Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [varchar](100) NULL,
+	[Type_Id] [int] NULL,
+	[Category_Id] [int] NULL,
+	[Subcategory_Id] [int] NULL,
+	[Exec_Cd] [varchar](4) NULL,
+	[Primary_Barcode] [varchar](6) NULL,
+	[Secondary_Barcode] [varchar](6) NULL,
+	[Modified_Date] [date] NULL,
+	[Modified_By] [char](11) NULL,
+ CONSTRAINT [PK_Template_Id] PRIMARY KEY CLUSTERED 
+(
+	[Template_Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+　
+　
