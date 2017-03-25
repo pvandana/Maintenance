@@ -1,0 +1,40 @@
+use CAW
+
+select distinct [Table Name] = o.Name, [Found In] = sp.Name, sp.type_desc
+  from sys.objects o inner join sys.sql_expression_dependencies  sd on o.object_id = sd.referenced_id
+                inner join sys.objects sp on sd.referencing_id = sp.object_id
+                    and sp.type in ('P', 'FN')
+  where o.name = 'Type_Id'
+  order by sp.Name
+
+SELECT
+  sys.columns.name AS ColumnName,
+  sys.tables.name AS TableName
+FROM
+  sys.columns
+JOIN
+  sys.tables
+ON
+  sys.columns.object_id = sys.tables.object_id
+WHERE  
+  sys.columns.name LIKE '%Type_Id%'
+
+　
+  -- Search in All Objects
+SELECT OBJECT_NAME(OBJECT_ID),
+definition
+FROM sys.sql_modules
+WHERE definition LIKE '%' + 'Type_Id' + '%'
+GO
+
+-- Search in Stored Procedure Only
+SELECT DISTINCT OBJECT_NAME(OBJECT_ID),
+object_definition(OBJECT_ID)
+FROM sys.Procedures
+WHERE object_definition(OBJECT_ID) LIKE '%' + 'Type_Id' + '%'
+GO
+
+SELECT Name
+FROM sys.procedures
+WHERE OBJECT_DEFINITION(OBJECT_ID) LIKE '%Type_Id%'
+GO
