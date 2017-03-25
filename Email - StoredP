@@ -1,0 +1,93 @@
+USE [CAW]
+GO
+/****** Object:  StoredProcedure [dbo].[Get_Email_By_Email_Id]    Script Date: 3/24/2017 9:53:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Vandana Ponnada
+-- Create date: 3/17/17
+-- Description:	Get the Emails by Email_Id 
+-- =============================================
+ALTER PROCEDURE [dbo].[Get_Email_By_Email_Id] 
+	-- Add the parameters for the stored procedure here
+	@ID int = null
+
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+     -- Retrieves the Emails by Email_Id 
+	Select Email_Id, Name, Subject, Message, Modified_By
+		From dbo.Emails
+	  Where Email_Id = @ID
+	
+END
+
+
+USE [CAW]
+GO
+/****** Object:  StoredProcedure [dbo].[Get_Emails]    Script Date: 3/24/2017 9:53:26 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Vandana Ponnada
+-- Create date: 3/17/17
+-- Description:	Get all the Email Templates
+-- =============================================
+ALTER PROCEDURE [dbo].[Get_Emails]
+	-- Add the parameters for the stored procedure here
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	Select Email_Id, Name, Subject 
+	  From dbo.Emails 
+	Order By Name
+END
+
+
+
+USE [CAW]
+GO
+/****** Object:  StoredProcedure [dbo].[Update_Emails]    Script Date: 3/24/2017 9:54:40 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Vandana Ponnada
+-- Create date: 3/17/17
+-- Description:	Updates records in the Emails Table
+-- =============================================
+ALTER PROCEDURE [dbo].[Update_Emails]
+	-- Add the parameters for the stored procedure here
+	@Id int = null,
+	@Subject varchar(100) = null,
+	@Message varchar(max) = null,
+	@Updated_By char(11) = null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+   
+	-- Updates the existing Email templates
+	UPDATE dbo.Emails
+		SET Subject = @Subject,
+			Message = @Message,
+			Modified_Date = GetDate(),
+			Modified_By = @Updated_By
+		WHERE
+			Email_Id = @Id
+
+END
