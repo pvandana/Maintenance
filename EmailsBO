@@ -1,0 +1,75 @@
+using System;
+using System.Data;
+
+//------------------------------------------------------------------------------
+//                                    EmailTemplatesBO.cs
+//
+//      This is the Email Template business objects.
+// 
+//------------------------------------------------------------------------------
+// 
+//                          Modification Control Log                           
+//                                                                             
+//    Date     By                 Description                                
+//  --------  ---  -------------------------------------------------------------
+//  03-17-17  VP   Copy of EmailsBO class file from Reimb.
+//                                                
+//------------------------------------------------------------------------------
+
+namespace EPF.BusinessObjects
+{
+    public class EmailsBO
+    {
+        #region Member Variables
+
+        #endregion
+
+　
+        #region Constructors
+
+        public EmailsBO()
+        { 
+            // Initialize Properties
+            Id = null;
+            Subject = string.Empty;
+            Message = string.Empty;
+            //Updated_Date = null;
+            Updated_By = string.Empty;
+        }
+
+        #endregion
+
+        
+        #region Enums
+
+        #endregion
+
+　
+        #region Properties
+
+        public Int32? Id { get; set; }
+        public string Subject { get; set; }
+        public string Message { get; set; }
+        //public DateTime? Updated_Date { get; set; }
+        public string Updated_By { get; set; }
+
+        #endregion
+
+　
+        #region Methods
+
+        
+        /// <summary>
+        /// Saves the Question
+        /// </summary>
+        /// <param name="dr"></param>
+        internal void Save(IDataReader dr)
+        {
+            Subject = dr["Subject"].ToString();
+            Message = dr["Message"].ToString();
+            Updated_By = dr["Modified_By"].ToString();
+        }
+
+        #endregion
+    }
+}
