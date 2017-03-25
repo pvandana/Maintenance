@@ -1,0 +1,171 @@
+using System;
+using System.Configuration;
+using System.Data;
+using System.Data.Common;
+using Microsoft.Practices.EnterpriseLibrary.Data.Sql;
+using EPF.BusinessObjects;
+using EPF.Utilities;
+
+//------------------------------------------------------------------------------
+//                                    EmailsDA.cs
+//
+//      This class handles all requests for the Emails DB Changes
+// 
+//------------------------------------------------------------------------------
+// 
+//                          Modification Control Log                           
+//                                                                             
+//    Date     By                 Description                                
+//  --------  ---  -------------------------------------------------------------
+//  03-17-17  VP   Copy of EmailsDA class file from Reimb.
+//                 Made changes to SQL DB connection strings and added stored procedure                                                              
+//------------------------------------------------------------------------------
+
+namespace EPF.DataAccess
+{
+    public class EmailsDA
+    {
+        #region Member Variables
+
+        // Variables
+        private SqlDatabase _DB = null;
+
+        #endregion
+
+　
+        #region Constructors
+
+        public EmailsDA()
+        { 
+            // Initialize Variables
+            ErrMsg = string.Empty;
+
+            try
+            {
+                // Create an instance of the SQL Database class
+                _DB = new SqlDatabase(ConfigurationManager.ConnectionStrings["CAW"].ToString());
+            }
+            catch (Exception err)
+            { 
+                // Database Error
+                ErrMsg = string.Format("{0} - Connecting to Database Error - {1}",
+                                       GetType().FullName,
+                                       err.Message);
+
+                // Save the Error
+                CommonDA.SaveError(ErrMsg, err);
+            }
+        }
+
+        #endregion
+
+        #region Enums
+
+        #endregion
+
+　
+        #region Properties
+
+        public string ErrMsg { get; set; }
+
+        #endregion
+
+　
+        #region Methods
+
+　
+        /// <summary>
+        /// Get Email by Email_Id for Maintenance/EmailTemplates.aspx
+        /// </summary>
+        /// <param name="emailId"></param>
+        /// <returns>EmailsBO</returns>
+        internal EmailsBO GetEmail(Int32 emailId)
+        { 
+            // Define Constants
+            const string sp = "dbo.Get_Email_By_Email_Id";
+
+            // Set Stored Procedure
+            DbCommand dbCommand = _DB.GetStoredProcCommand(sp);
+
+            // Define Variables
+            EmailsBO emailsBO = new EmailsBO();
+
+            try
+            {
+                // Set Input Parameters
+                _DB.AddInParameter(dbCommand, "ID", DbType.Int32, emailId);
+
+                using (IDataReader dr = _DB.ExecuteReader(dbCommand))
+                {
+                    // Process all the records
+                    while (dr.Read())
+                    {
+                        // Save the Message
+                        emailsBO.Save(dr);
+                    }
+                }
+            }
+            catch (InternalException err)
+            {
+                // Re-Throw the Internal Exception
+                throw;
+            }
+            catch (Exception err)
+            { 
+                // Format the Parameters
+                string parms = CommonDA.FormatParmsSQL(dbCommand);
+
+                // Database Error
+                ErrMsg = string.Format("{0} - Get Email by Email_Id Error - Parameters = {1} - {2}",
+                                       GetType().FullName,
+                                       parms,
+                                       err.Message);
+
+                // Save the Error
+                CommonDA.SaveError(ErrMsg, err);
+            }
+
+            return emailsBO;
+        }
+
+        internal void UpdateEmail(EmailsBO emailsBO)
+        { 
+            // Define Constants
+            const string sp = "dbo.Update_Emails";
+
+            // Set Stored Procedure
+            DbCommand dbCommand = _DB.GetStoredProcCommand(sp);
+
+            try
+            {
+                // Set Input Parameters
+                _DB.AddInParameter(dbCommand, "Id", DbType.Int32, emailsBO.Id);
+                _DB.AddInParameter(dbCommand, "Subject", DbType.String, emailsBO.Subject);
+                _DB.AddInParameter(dbCommand, "Message", DbType.String, emailsBO.Message);
+                _DB.AddInParameter(dbCommand, "Updated_By", DbType.String, emailsBO.Updated_By);
+                _DB.ExecuteNonQuery(dbCommand);
+            }
+            catch (InternalException err)
+            {
+                // Re-throw the Internal Exception
+                throw;
+            }
+            catch (Exception err)
+            { 
+                // Format the parameters
+                string parms = CommonDA.FormatParmsSQL(dbCommand);
+
+                // Database Error
+                ErrMsg = string.Format("{0} - Update Email Error - Parameters = {1} - {2}",
+                                       GetType().FullName,
+                                       parms,
+                                       err.Message);
+
+                // Save the Error
+                CommonDA.SaveError(ErrMsg, err);
+            }
+        }
+
+        #endregion
+    }
+}
