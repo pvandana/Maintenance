@@ -1,0 +1,148 @@
+Category_Id Category Modified_Date Modified_By1 Attendance 2017-03-16 0000000004911 Conduct 2017-03-16 0000000004912 Final 2017-03-16 0000000004913 Informal 2017-03-16 0000000004914 Performance 2017-03-16 NULL15 PIP 2017-03-16 NULL16 Punctuality 2017-03-16 NULL
+
+USE [CAW]
+GO
+/****** Object:  StoredProcedure [dbo].[Insert_Update_Template_Categories]    Script Date: 3/24/2017 6:54:06 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Vandana Ponnada
+-- Create date: 3/9/17
+-- Description:	Inserts/ Updates records in the Category 
+-- =============================================
+ALTER PROCEDURE [dbo].[Insert_Update_Template_Categories] 
+	-- Add the parameters for the stored procedure here
+	@Category_Id Int = Null,
+	@Category varchar(50) = Null,
+	@Modified_By char(11) = Null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Inserts a new row in the Category by Category ID if record not present 
+	IF NOT EXISTS 
+		(
+		  SELECT Category_Id
+		   FROM dbo.Template_Categories 
+		   WHERE Category_Id = @Category_Id
+		)
+		 INSERT 
+		   INTO dbo.Template_Categories (Category, Modified_Date, Modified_By)
+		   VALUES (@Category, GetDate(), @Modified_By)
+	
+	ELSE
+	
+	-- Updates a row in the Category by Category ID if record already present 
+	UPDATE dbo.Template_Categories
+		SET Category = @Category,
+			Modified_Date = GetDate(),
+			Modified_By = @Modified_By
+		WHERE
+			Category_Id = @Category_Id
+END
+
+USE [CAW]
+GO
+/****** Object:  StoredProcedure [dbo].[Delete_Template_Categories]    Script Date: 3/24/2017 7:21:36 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Vandana Ponnada
+-- Create date: 3/9/17
+-- Description:	Deletes the Category by Category ID
+-- =============================================
+ALTER PROCEDURE [dbo].[Delete_Template_Categories]
+	-- Add the parameters for the stored procedure here
+	@Category_Id Int = Null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Delete the Category record by Category ID
+	Delete 
+		From dbo.Template_Categories
+	  Where Category_Id = @Category_Id
+	
+END
+
+USE [CAW]
+GO
+/****** Object:  StoredProcedure [dbo].[Get_Template_Categories]    Script Date: 3/24/2017 7:22:02 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Vandana Ponnada
+-- Create date: 3/9/17
+-- Description:	Gets all the Template Categories
+-- =============================================
+ALTER PROCEDURE [dbo].[Get_Template_Categories]
+	-- Add the parameters for the stored procedure here
+	@New_Record varchar(5) = Null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Retrieves the Categories
+	If @New_Record = 'True'
+		Begin
+		  --Include a Blank New Record
+		  Select Category_Id, Category
+		    From Dbo.Template_Categories
+		  Union
+		  Select 0, Null
+		  Order By Category
+		End
+	Else
+		Begin
+		  --Only actual requests
+		  --Retrieves all the category names and places "Add a new Category" at the bottom
+		  Select Category_Id, Category
+		    From dbo.Template_Categories
+		  Order By 
+			Case When Category = 'Add a new Category' 
+				  Then 'ZZZZZ'
+				 Else
+				  Category 
+			 End	
+		END
+END
+
+USE [CAW]
+GO
+/****** Object:  StoredProcedure [dbo].[Get_Template_Requests_Count_By_Categories]    Script Date: 3/24/2017 7:22:32 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Vandana Ponnada
+-- Create date: 3/14/17
+-- Description:	Get Maintenance screen Template request Count by Category ID 
+-- =============================================
+ALTER PROCEDURE [dbo].[Get_Template_Requests_Count_By_Categories] 
+	-- Add the parameters for the stored procedure here
+	@Category_Id int = Null,
+	@Row_Count int Output
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Determine the number of requests that use this Category Id
+	Select @Row_Count = Count(*) 
+	  From dbo.Templates
+	 Where Category_Id = @Category_Id
+END
