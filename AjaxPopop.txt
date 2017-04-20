@@ -1,0 +1,41 @@
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="InactivateTemplate.aspx.cs"%>
+
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc1" %>
+
+<body>
+    <form id="form1" runat="server">
+    <div style="min-height: 700px;">
+        <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+        <asp:Button ID="btnDelete" runat="server" Text="Delete/Inactivate" />
+        <cc1:ModalPopupExtender ID="ModalPopupExtender1"
+            runat="server" CancelControlID="btnCancel" OkControlID="btnOkay" TargetControlID="btnDelete"
+            PopupControlID="pnlEnterDate">
+        </cc1:ModalPopupExtender>
+        <div id="pnlEnterDate" style="display: none;border:solid"  >
+            <div>
+                <div>
+                    <table>
+                        <tr><td>&nbsp;</td></tr>
+                        <tr>
+                            <td style="font-size:medium;font-weight:bold">
+                                Enter Inactivation Date
+                            </td>
+                        </tr>
+                        <tr><td>&nbsp;</td></tr>
+                        <tr>
+                            <td style="text-align:center">
+                                <input type="text" size="20" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="text-align:center">
+                    <input id="btnOkay" value="Done" type="button" />
+                    <input id="btnCancel" value="Cancel" type="button" />
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
+</body>
+</html>
